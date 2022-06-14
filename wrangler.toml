@@ -1,0 +1,20 @@
+main = "dist/worker.js"
+account_id = "e5b481e270ea92425ea41b47e117ae76"
+compatibility_date = "2022-05-23"
+compatibility_flags = ["streams_enable_constructors"]
+name = "ssr-blog"
+route = "fatih-erikli.com/*"
+type = "javascript"
+workers_dev = true
+zone_id = "7a7c3b1112953c006fb4d5e2a3cef5e3"
+
+kv_namespaces = [
+  {binding = "BLOG", id = "515d9e0546f34b67b1f195bc5d4fea58", preview_id = "85d9ec4ba5934bd393db7857f7ef2efc"},
+]
+[site]
+bucket = "./dist"
+entry-point = ""
+[build]
+command = "npm install && npm run build"
+[build.upload]
+format = "service-worker"
