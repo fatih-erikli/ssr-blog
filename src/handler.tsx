@@ -1,10 +1,8 @@
-import React, { FC, ReactNode } from 'react';
+import React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import { ServerSideContainer } from './containers/ServerSideContainer';
 import { exactMatch, getRoutes } from './routes';
 import { Route } from './types';
-
-declare const BLOG: KVNamespace;
 
 const matchRoute = (routes: readonly Route[], pathname: string): Route => {
   let matchedRoute: Route;
@@ -42,11 +40,10 @@ export async function handleRequest(request: Request): Promise<Response> {
       stream = `<!DOCTYPE html>${stream}`;
       break;
     }
+    case 'text/xml':
+    case 'text/css':
     case 'text/plain': {
       stream = await matchedRoute.handler(request);
-      break;
-    } 
-    case 'text/css': {
       stream = await matchedRoute.handler(request);
       break;
     }

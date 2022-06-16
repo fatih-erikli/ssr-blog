@@ -23,6 +23,51 @@ export const exactMatch =
 export const getRoutes = (): readonly Route[] => {
   return [
     {
+      contentType: 'text/xml',
+      match: exactMatch('/sitemap.xml'),
+      handler: async () => {
+        const postKeys = (await BLOG.list({ prefix: BLOG_POSTS_PREFIX })).keys;
+        let posts = await Promise.all(
+          postKeys.map((metadata) => BLOG.get(metadata.name, { type: 'json' })) as unknown as Promise<Post>[],
+        );
+        posts = posts.filter(Boolean);
+        posts = posts.filter((post) => post.isListed);
+        posts.sort((a, b) => {
+          const date1 = new Date();
+          date1.setFullYear(a.date[0]);
+          date1.setMonth(a.date[1]);
+          date1.setDate(a.date[2]);
+          const date2 = new Date();
+          date2.setFullYear(b.date[0]);
+          date2.setMonth(b.date[1]);
+          date2.setDate(b.date[2]);
+          return date2.getTime() - date1.getTime();
+        });
+        return Promise.resolve(
+          [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+
+            ...posts.map((post) =>
+              [
+                '<url>',
+                `<loc>https://fatih-erikli.com/${post.url}.html</loc>`,
+                `<lastmod>${(([year, month, day]: [number, number, number]) => {
+                  const date = new Date();
+                  date.setFullYear(year);
+                  date.setMonth(month);
+                  date.setDate(day);
+                  return date.toJSON();
+                })(post.date)}</lastmod>`,
+                '</url>',
+              ].join('\n'),
+            ),
+            '</urlset>',
+          ].join('\n'),
+        );
+      },
+    },
+    {
       contentType: 'text/plain',
       match: exactMatch('/robots.txt'),
       handler: () => Promise.resolve('robots.txt'),
@@ -40,20 +85,19 @@ export const getRoutes = (): readonly Route[] => {
         let posts = await Promise.all(
           postKeys.map((metadata) => BLOG.get(metadata.name, { type: 'json' })) as unknown as Promise<Post>[],
         );
+        posts = posts.filter(Boolean);
         posts = posts.filter((post) => post.isListed);
-        posts.sort(
-          (a, b) => {
-            const date1 = new Date();
-            date1.setFullYear(a.date[0]);
-            date1.setMonth(a.date[1]);
-            date1.setDate(a.date[2]);
-            const date2 = new Date();
-            date2.setFullYear(b.date[0]);
-            date2.setMonth(b.date[1]);
-            date2.setDate(b.date[2]);
-            return date2.getTime() - date1.getTime();
-          }
-        );
+        posts.sort((a, b) => {
+          const date1 = new Date();
+          date1.setFullYear(a.date[0]);
+          date1.setMonth(a.date[1]);
+          date1.setDate(a.date[2]);
+          const date2 = new Date();
+          date2.setFullYear(b.date[0]);
+          date2.setMonth(b.date[1]);
+          date2.setDate(b.date[2]);
+          return date2.getTime() - date1.getTime();
+        });
         return <App page={{ name: 'home', content: { posts } }} />;
       },
       container: ServerSideContainer,
@@ -66,19 +110,17 @@ export const getRoutes = (): readonly Route[] => {
         const posts = await Promise.all(
           postKeys.map((metadata) => BLOG.get(metadata.name, { type: 'json' })) as unknown as Promise<Post>[],
         );
-        posts.sort(
-          (a, b) => {
-            const date1 = new Date();
-            date1.setFullYear(a.date[0]);
-            date1.setMonth(a.date[1]);
-            date1.setDate(a.date[2]);
-            const date2 = new Date();
-            date2.setFullYear(b.date[0]);
-            date2.setMonth(b.date[1]);
-            date2.setDate(b.date[2]);
-            return date2.getTime() - date1.getTime();
-          }
-        );
+        posts.sort((a, b) => {
+          const date1 = new Date();
+          date1.setFullYear(a.date[0]);
+          date1.setMonth(a.date[1]);
+          date1.setDate(a.date[2]);
+          const date2 = new Date();
+          date2.setFullYear(b.date[0]);
+          date2.setMonth(b.date[1]);
+          date2.setDate(b.date[2]);
+          return date2.getTime() - date1.getTime();
+        });
         return <App page={{ name: 'admin', content: { posts: posts } }} />;
       },
       container: ServerSideContainer,
@@ -149,13 +191,13 @@ export const getRoutes = (): readonly Route[] => {
     {
       contentType: 'text/html',
       match: endsWith('.html'),
-      handler:  async (request) => {
+      handler: async (request) => {
         const url = new URL(request.url);
         const pathNameParts = url.pathname.split('/');
         let fileName = pathNameParts[pathNameParts.length - 1];
-        fileName = fileName.replace(".html", "");
+        fileName = fileName.replace('.html', '');
         const post = (await BLOG.get(concat(BLOG_POSTS_PREFIX, fileName), { type: 'json' })) as unknown as Post;
-        return <App page={{ name: "blog-detail", content: {post}}} />;
+        return <App page={{ name: 'blog-detail', content: { post } }} />;
       },
       container: ServerSideContainer,
     },

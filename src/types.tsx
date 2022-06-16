@@ -14,6 +14,11 @@ export type Route =
       container: FC<{ children: ReactNode }>;
     }
   | {
+      contentType: 'text/xml';
+      match: (pathName: string) => boolean;
+      handler: (request: Request) => Promise<string>;
+    }
+  | {
       contentType: 'text/plain';
       match: (pathName: string) => boolean;
       handler: (request: Request) => Promise<string>;
@@ -57,5 +62,5 @@ export type Page =
     }
   | {
       name: 'posts-edit';
-      content: { post: Post, postUpdated: boolean };
+      content: { post: Post; postUpdated: boolean };
     };

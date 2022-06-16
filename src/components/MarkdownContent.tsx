@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { parseMarkdownContent } from '../utils';
 
 export const MarkdownContent: FC<{ content: string }> = ({ content }) => {
-  // content = JSON.parse(JSON.stringify(content));
+  [content] = content.split('[content]')
   return (
     <div
       style={{ }}
