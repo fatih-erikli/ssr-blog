@@ -70,7 +70,7 @@ export const getRoutes = (): readonly Route[] => {
     {
       contentType: 'text/plain',
       match: exactMatch('/robots.txt'),
-      handler: () => Promise.resolve('robots.txt'),
+      handler: () => Promise.resolve('Robots are allowed'),
     },
     {
       contentType: 'text/css',
