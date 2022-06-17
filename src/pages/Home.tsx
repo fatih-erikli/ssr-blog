@@ -22,7 +22,7 @@ export const Home: FC<{
           <h2>
             <a href={post.url + '.html'}>{post.title}</a>
           </h2>
-          <MarkdownContent content={post.content} />
+          <MarkdownContent preview={true} content={post.content} />
           <time dateTime={stringifyDate(post.date)}>{post.date.join('-')}</time>
         </div>
       ))}

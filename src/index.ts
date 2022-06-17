@@ -9,6 +9,8 @@ const handleEvent = async (event: FetchEvent) => {
     case "/style.css":
     case "/favicon.png":
     case "/client.js":
+    case "/syntax-highlight.js":
+    case "/syntax-highlight.css":
       return await getAssetFromKV(event);
     default:
       return handleRequest(event.request);

@@ -107,9 +107,10 @@ export const getRoutes = (): readonly Route[] => {
       match: exactMatch('/admin'),
       handler: async () => {
         const postKeys = (await BLOG.list({ prefix: BLOG_POSTS_PREFIX })).keys;
-        const posts = await Promise.all(
+        let posts = await Promise.all(
           postKeys.map((metadata) => BLOG.get(metadata.name, { type: 'json' })) as unknown as Promise<Post>[],
         );
+        posts = posts.filter(Boolean).filter(post => Boolean(post.date));
         posts.sort((a, b) => {
           const date1 = new Date();
           date1.setFullYear(a.date[0]);

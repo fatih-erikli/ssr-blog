@@ -8,9 +8,11 @@ export const stringifyDate = ([year, month, day]: [number, number, number]): str
   date.setDate(day);
   return date.toJSON();
 };
+
 export const parseMarkdownContent = (content: string): string => {
   return marked.parse(content);
 };
+
 export const concat = (a: string, b: string): string => `${a}${b}`;
 export const checkPassword = (password: string): boolean =>
   sha256.sha256(password as string) !== PASSWORD_SHA256;
