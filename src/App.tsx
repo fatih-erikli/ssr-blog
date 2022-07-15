@@ -21,16 +21,42 @@ export const App: FC<{
       pageContent = <Admin posts={page.content.posts} />;
       break;
     case 'home':
-      pageContent = <Home posts={page.content.posts} />;
+      pageContent = <Home posts={page.content.posts} mailSent={page.content.mailSent} />;
       break;
     case 'blog-detail':
       pageContent = <BlogDetail content={{ post: page.content.post }} />;
       break;
   }
   return (
-    <div style={{ padding: '1rem', maxWidth: 900, margin: 'auto' }}>
-      <h1><a href={'/'}>Fatih Erikli</a></h1>
+    <div className={`page-container page-container--${page.name}`}>
+      <h1 className="page-header">
+        Full-stack Software Developer
+        <br />
+        <a href="/" style={{ textAlign: 'left', fontSize: '3rem' }}>
+          Fatih Erikli
+        </a>
+      </h1>
       {pageContent}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `var SERVER_CONTENT = ${JSON.stringify(page.content)}`,
+        }}
+      ></script>
+      <footer>
+        Fatih Erikli, 2022 <br />
+        <a rel={'nofollow'} target={'_blank'} href={'https://instagram.com/fatiherikliuniq'}>
+          instagram.com/fatiherikliuniq
+        </a>
+        . <br />
+        <a rel={'nofollow'} target={'_blank'} href={'https://twitter.com/fatiherikliuniq'}>
+          twitter.com/fatiherikliuniq
+        </a>
+        . <br />
+        <a rel={'nofollow'} target={'_blank'} href={'https://github.com/fatih-erikli'}>
+          github.com/fatih-erikli
+        </a>
+        .
+      </footer>
     </div>
   );
 };

@@ -80,7 +80,8 @@ export const getRoutes = (): readonly Route[] => {
     {
       contentType: 'text/html',
       match: exactMatch('/'),
-      handler: async () => {
+      handler: async (request) => {
+        let mailSent = null;
         const postKeys = (await BLOG.list({ prefix: BLOG_POSTS_PREFIX })).keys;
         let posts = await Promise.all(
           postKeys.map((metadata) => BLOG.get(metadata.name, { type: 'json' })) as unknown as Promise<Post>[],
@@ -98,9 +99,44 @@ export const getRoutes = (): readonly Route[] => {
           date2.setDate(b.date[2]);
           return date2.getTime() - date1.getTime();
         });
-        return <App page={{ name: 'home', content: { posts } }} />;
+        switch (request.method) {
+          case 'POST':
+            {
+              const postData = await request.formData();
+              const message = postData.get('message');
+              const email = postData.get('email');
+              if (message) {
+                await fetch('https://api.postmarkapp.com/email', {
+                  method: 'POST',
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Postmark-Server-Token': 'd6a9fbfc-3417-4da2-91f5-a96e6712470a',
+                  },
+                  body: JSON.stringify({
+                    From: 'info@arbejdstakt.com',
+                    To: 'info@arbejdstakt.com',
+                    Subject: `Rate per hour ${postData.get('rate-per-hour')}`,
+                    ReplyTo: email,
+                    HtmlBody: message,
+                    MessageStream: 'outbound',
+                  }),
+                });
+                mailSent = true;
+              } else {
+                mailSent = false;
+              }
+            }
+            break;
+        }
+        return <App page={{ name: 'home', content: { posts, mailSent } }} />;
       },
       container: ServerSideContainer,
+      containerProps: {
+        hydrateClientApplication: "/client.js",
+        serverContent: {
+        }
+      },
     },
     {
       contentType: 'text/html',
@@ -110,7 +146,7 @@ export const getRoutes = (): readonly Route[] => {
         let posts = await Promise.all(
           postKeys.map((metadata) => BLOG.get(metadata.name, { type: 'json' })) as unknown as Promise<Post>[],
         );
-        posts = posts.filter(Boolean).filter(post => Boolean(post.date));
+        posts = posts.filter(Boolean).filter((post) => Boolean(post.date));
         posts.sort((a, b) => {
           const date1 = new Date();
           date1.setFullYear(a.date[0]);

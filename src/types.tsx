@@ -12,6 +12,10 @@ export type Route =
       match: (pathName: string) => boolean;
       handler: (request: Request) => Promise<ReactNode>;
       container: FC<{ children: ReactNode }>;
+      containerProps?: {
+        hydrateClientApplication: string,
+        serverContent: Record<string, string>
+      }
     }
   | {
       contentType: 'text/xml';
@@ -42,6 +46,7 @@ export type Page =
       name: 'home';
       content: {
         posts: Post[];
+        mailSent: boolean | null;
       };
     }
   | {

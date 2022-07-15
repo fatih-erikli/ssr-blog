@@ -31,11 +31,12 @@ export async function handleRequest(request: Request): Promise<Response> {
   switch (matchedRoute.contentType) {
     case 'text/html': {
       const Container = matchedRoute.container;
-      const component = <Container>{(await matchedRoute.handler(request))}</Container>;
+      const props = matchedRoute.containerProps || {};
+      const component = <Container {...props}>{await matchedRoute.handler(request)}</Container>;
       try {
         stream = await ReactDOMServer.renderToString(component);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
       stream = `<!DOCTYPE html>${stream}`;
       break;

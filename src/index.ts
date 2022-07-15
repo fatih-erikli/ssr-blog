@@ -8,6 +8,8 @@ const handleEvent = async (event: FetchEvent) => {
     case "/logo.png":
     case "/style.css":
     case "/favicon.png":
+    case "/hourglass.svg":
+    case "/pen-tool.svg":
     case "/client.js":
     case "/syntax-highlight.js":
     case "/syntax-highlight.css":

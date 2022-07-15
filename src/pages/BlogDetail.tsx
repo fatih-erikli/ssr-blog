@@ -11,8 +11,10 @@ export const BlogDetail: FC<{
   return (
     <>
       <h2>{content.post.title}</h2>
+      <div className="post-header">
+        <time dateTime={stringifyDate(content.post.date)}>{content.post.date.join('-')}</time>
+      </div>
       <MarkdownContent preview={false} content={content.post.content} />
-      <time dateTime={stringifyDate(content.post.date)}>{content.post.date.join('-')}</time>
     </>
   );
 };
